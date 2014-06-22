@@ -1,0 +1,17 @@
+{
+    "contents" : "---\ntitle: \"Vehicle Fuel Consumption\"\noutput:\n  pdf_document:\n    toc: true\n    highlight: zenburn\n---\nVehicle Fuel Consumption\n========================================================\n## Executive Summary\n\nIn this issue of the \"Motor Trend\", we will explore the features that affect fuel consumption in miles per gallon (MPG). The main questions to be addressed are:\n\n- “Is an automatic or manual transmission better for MPG”\n- “Quantifying how different is the MPG between automatic and manual transmissions?”\n\nIt seems that fuel consumption is larger for manual transmission vehicles compared to automatic. \n\n## Input Data\nThe data to be used in this study are extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles (1973–74 models).\n\nThe data frame consists of 32 observations on 11 variables.\n\n- **mpg**:\t Miles/(US) gallon\n- **cyl**:\t Number of cylinders\n- **disp**:\t Displacement (cu.in.)\n- **hp**:\t Gross horsepower\n- **drat**:\t Rear axle ratio\n- **wt**:\t Weight (lb/1000)\n- **qsec**:\t 1/4 mile time\n- **vs**:\t V/S\n- **am**:\t Transmission (0 = automatic, 1 = manual)\n- **gear**:\t Number of forward gears\n- **carb**:\t Number of carburetors\n\n\n```{r}\ndata(mtcars)\nhead(mtcars)\n```\n\n## Feature Selection\n\nInitially we plot a matrix of scatter plots displaying how the variables affect each other.\nThen we calculate which of the variables are strongly correlated with each other.\n\nThe most important features seem to be disp - Displacement (cu.in.) and cyl - Number of cylinders.\n\nThe feature under discussion, am - Transmission (0 = automatic, 1 = manual) seems not between those strongly affecting others. We will combine it with the features with which am is least correlated:\n- carb\n- vs\n- qsec\n- hp\n\n\n```{r}\nrequire(graphics)\npairs(mtcars, main = \"mtcars data\")\n\nM <- abs(cor(mtcars[,-1]))\ndiag(M) <- 0\nwhich(M > 0.9,arr.ind=T)\nsort(M[8,-8])\n```\n\n## Regression Models\nam is a binary variable. \nAfter several repetitions (starting with all candidate covariants) it seems that regression with covariates carb and vs produced the best results (regarding variance and p-values).\n\n```{r}\nlm1 <- lm(mpg ~ am, mtcars)\nlm2 <- lm(mpg ~ am+carb+vs, mtcars)\n```\n\n\n## Model Evalution\nResidual standard error, p-values and standard and press residuals (for am and covariants) are displayed below:\n```{r}\nsummary(lm1)\nrstandard(lm1)\nresid(lm1) / (1 - hatvalues(lm1))\n\nsummary(lm2)\nrstandard(lm2)\nresid(lm2) / (1 - hatvalues(lm2))\n```\n\n## Results\nThe following figure displays how fuel consumption varies with transmission. Fitted lines on am (red) and am+carb+vs (blue) are added. \n\n```{r fig.width=7, fig.height=6}\nplot(mtcars$mpg~mtcars$am,col=mtcars$hp,pch=19,main=\"Fuel Consumption (gmt) over Transmission (am)\", xlab = \"Transmission (0 = automatic, 1 = manual)\", ylab = \"Miles/(US) gallon\")\nabline(lm1, lwd = 3, col=\"red\")\nabline(lm2, lwd = 3, col=\"blue\")\n```\n",
+    "created" : 1403419896077.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4205280207",
+    "id" : "BA62C73B",
+    "lastKnownWriteTime" : 1403462393,
+    "path" : "~/R/RegressionModels/ProjectRegressionModels.Rmd",
+    "project_path" : "ProjectRegressionModels.Rmd",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_markdown"
+}

@@ -1,0 +1,17 @@
+{
+    "contents" : "rmd.convert <- function(fname, output=c('latex', 'word', 'html', \"pdf\")){\n        ## Thanks to Robert Musk for helpful additions to make this run better on Windows\n        \n        require(knitr)\n        require(tools)\n        \n        thedir <- file_path_as_absolute(dirname(fname))\n        thefile <- (basename(fname)) \n        \n        create_latex <- function(f){\n                knit(f, 'tmp-outputfile.md'); \n                newname <- paste0(file_path_sans_ext(f), \".tex\")\n                mess <- paste('pandoc -f markdown -t latex -s -o', shQuote(newname), \n                              \"tmp-outputfile.md\")\n                system(mess)\n                cat(\"The Latex file is\", file.path(thedir, newname), \n                    \"\\nIf transporting do not forget to include the folder\", file.path(thedir, \"figure\"), \"\\n\")\n                mess <- paste('rm tmp-outputfile.md')\n                system(mess)\n        }\n        \n        create_word <- function(f){\n                knit(f, 'tmp-outputfile.md');\n                newname <- paste0(file_path_sans_ext(f),\".docx\")\n                mess <- paste('pandoc -f markdown -t docx -o', shQuote(newname), \"tmp-outputfile.md\")\n                system(mess)\n                cat(\"The Word (docx) file is\", file.path(thedir, newname), \"\\n\")\n                mess <- paste('rm tmp-outputfile.md')\n                system(mess)\n        }\n        \n        create_html <- function(f){\n                knit2html(f)\n                cat(\"The main HTML file is\", file.path(thedir, paste0(file_path_sans_ext(f), \".html\")), \n                    \"\\nIf transporting do not forget to include the folder\", file.path(thedir, \"figure\"), \"\\n\")\n        }\n        \n        create_pdf <- function(f){\n                knit(f, 'tmp-outputfile.md');\n                newname <- paste0(file_path_sans_ext(f),\".pdf\")\n                mess <- paste('pandoc -f markdown -o', shQuote(newname), \"tmp-outputfile.md\")\n                system(mess)\n                cat(\"The PDF file is\", file.path(thedir, newname), \"\\n\")\n                mess <- paste('rm tmp-outputfile.md')\n                system(mess)\n        }\n        \n        origdir <- getwd()  \n        tryCatch({\n                setwd(thedir) ## put us next to the original Rmarkdown file\n                out <- match.arg(output)\n                switch(out,\n                       latex=create_latex(thefile),\n                       html=create_html(thefile),\n                       pdf=create_pdf(thefile),\n                       word=create_word(thefile)\n                )}, finally=setwd(origdir))\n        \n}",
+    "created" : 1403461591556.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "913512430",
+    "id" : "7D118E0C",
+    "lastKnownWriteTime" : 1403461629,
+    "path" : "~/R/RegressionModels/Rmd2.R",
+    "project_path" : "Rmd2.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
